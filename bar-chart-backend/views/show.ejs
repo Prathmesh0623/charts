@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Bar Chart - Sales Data</title>
+    <link rel="stylesheet" href="style.css"> <!-- Link to your CSS file -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body>
+    <h1>Sales Data for <%= month %></h1>
+
+    <div class="chart-container">
+        <canvas id="myBarChart"></canvas>
+    </div>
+
+    <div class="back-button">
+        <a href="/listing">Back to Listings</a>
+    </div>
+
+    <script>
+        // Fetch the bar chart data from the API
+        async function fetchBarChartData() {
+            const month = '<%= month %>'; // Pass the selected month to the API
+            const response = await fetch(`/api/bar-chart?month=${month}`);
+            return await response.json();
+        }
+
+        // Render the bar chart
+        async function renderChart() {
+            const data = await fetchBarChartData();
+
+            const ctx = document.getElementById('myBarChart').getContext('2d');
+            const myBarChart = new Chart(ctx, {
+                type: 'bar',
+                data: {
+                    labels: Object.keys(data), // Price ranges
+                    datasets: [{
+                        label: 'Number of Sales',
+                        data: Object.values(data), // Sales counts
+                        backgroundColor: 'rgba(75, 192, 192, 0.2)',
+                        borderColor: 'rgba(75, 192, 192, 1)',
+                        borderWidth: 1
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            title: {
+                                display: true,
+                                text: 'Number of Sales'
+                            }
+                        },
+                        x: {
+                            title: {
+                                display: true,
+                                text: 'Price Ranges'
+                            }
+                        }
+                    }
+                }
+            });
+        }
+
+        // Call the renderChart function when the page loads
+        window.onload = renderChart;
+    </script>
+</body>
+</html>
